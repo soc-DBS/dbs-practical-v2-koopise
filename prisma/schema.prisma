@@ -66,6 +66,15 @@ model staffBackup {
   @@map("staff_backup")
 }
 
+model staffDependent {
+  staffNo          String  @map("staff_no") @db.Char(4)
+  dependentName   String   @map("dependent_name") @db.VarChar(100)
+  relationship String @db.VarChar(20)
+
+  @@id([staffNo, dependentName])
+  @@map("staff_dependent")
+}
+
 model userAccount {
   id        Int    @id
   accountNo String @map("account_no") @db.VarChar(6)
@@ -80,4 +89,51 @@ model userRole {
   name String @db.VarChar(25)
 
   @@map("user_role")
+}
+
+model module {
+  modCode     String   @id @map("mod_code") @db.VarChar(10)
+  modName     String   @map("mod_name") @db.VarChar(100)
+  creditUnit  Int      @map("credit_unit")
+  modCoord    String?  @map("mod_coord") @db.Char(4)
+
+  @@map("module")
+}
+
+model preRequisite {
+  modCode String @map("mod_code") @db.VarChar(10)
+  requisite String @map("requisite") @db.VarChar(10)
+
+  @@id([modCode, requisite])
+  @@map("pre_requisite")
+}
+
+model country {
+  countryName String @id @map("country_name") @db.VarChar(30)
+  language   String @db.VarChar(30)
+  region    String @db.VarChar(30)
+}
+
+model student {
+  admNo      String   @id @map("adm_no") @db.Char(4)
+  studentName String   @map("student_name") @db.VarChar(30)
+  genderCharacter String @map("gender_character") @db.Char(1)
+  addressCharacterVarying String @map("address_character_varying") @db.VarChar(100)
+  mobilePhone String @map("mobile_phone") @db.Char(8)
+  homePhone String @map("home_phone") @db.Char(8)
+  dob        DateTime @map("dob") @db.Date
+  nationalityCharacterVarying String @map("nationality_character_varying") @db.VarChar(30)
+  crseCode   String   @map("crse_code") @db.VarChar(5)
+
+  @@map("student")
+}
+
+model studentModPerformance {
+  admNoCharacter String @map("adm_no_character") @db.Char(4)
+  modRegistered String @map("mod_registered") @db.VarChar(10)
+  mark Int @map("mark")
+  grade String @map("grade") @db.Char(1)
+
+  @@id([admNoCharacter, modRegistered])
+  @@map("student_mod_performance")
 }
