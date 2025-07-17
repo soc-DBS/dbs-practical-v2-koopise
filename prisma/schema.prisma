@@ -13,6 +13,8 @@ model course {
   offeredBy String   @map("offered_by") @db.VarChar(5)
   crseFee   Decimal  @map("crse_fee") @db.Decimal(7, 2)
   labFee    Decimal? @map("lab_fee") @db.Decimal(7, 2)
+
+  course department @relation(fields: offeredBy, references:[deptCode])
 }
 
 model department {
@@ -24,6 +26,10 @@ model department {
   budget           Decimal?  @db.Decimal(9, 2)
   expenditure      Decimal?  @db.Decimal(9, 2)
   hodApptDate      DateTime? @map("hod_appt_date") @db.Date
+  
+  departmentHodToStaff  staff @relation("departmentHodToStaff", fields: [hod], references: [staffNo], onDelete: NoAction, onUpdate: NoAction, map:"dept_hod_fk")     
+  staffDeptCodeToDepartment staff[] @relation("staffDeptCodeToDepartment")
+  courseToDepartment course[]
 }
 
 model staff {
@@ -43,7 +49,12 @@ model staff {
   typeOfEmployment  String   @map("type_of_employment") @db.VarChar(2)
   highestQln        String   @map("highest_qln") @db.VarChar(10)
   designation       String   @db.VarChar(20)
-}
+
+  departmentHodTostaff department[] @relation("departmentHodToStaff")     
+  staffDeptCodeToDepartment department @relation("staffDeptCodeToDepartment", fields: [deptCode], references: [deptCode], onDelete: NoAction, onUpdate: NoAction, map: "staff_dept_code_fk")     
+  staffDependent    staffDependent[] 
+} 
+
 
 model staffBackup {
   staffNo          String   @id @map("staff_no") @db.Char(4)
@@ -70,6 +81,8 @@ model staffDependent {
   staffNo          String  @map("staff_no") @db.Char(4)
   dependentName   String   @map("dependent_name") @db.VarChar(100)
   relationship String @db.VarChar(20)
+
+  staff staff  @relation( fields: [staffNo], references: [staffNo], onDelete: NoAction, onUpdate: NoAction, map: "staff_dependent_staff_no_fk")
 
   @@id([staffNo, dependentName])
   @@map("staff_dependent")
