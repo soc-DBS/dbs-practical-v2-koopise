@@ -15,6 +15,7 @@ model course {
   labFee    Decimal? @map("lab_fee") @db.Decimal(7, 2)
 
   course department @relation(fields: offeredBy, references:[deptCode])
+  courseToStudent student[]
 }
 
 model department {
@@ -110,6 +111,9 @@ model module {
   creditUnit  Int      @map("credit_unit")
   modCoord    String?  @map("mod_coord") @db.Char(4)
 
+  preRequisite_req preRequisite[] @relation("preRequisiteRequisiteToModule")
+  preRequisite_mod preRequisite[] @relation("preRequisiteModCodeToModule")
+  module studentModPerformance[]
   @@map("module")
 }
 
@@ -117,6 +121,9 @@ model preRequisite {
   modCode String @map("mod_code") @db.VarChar(10)
   requisite String @map("requisite") @db.VarChar(10)
 
+
+pre_requisite_mod_code_fk module @relation("preRequisiteModCodeToModule", fields: [modCode], references: [modCode], onDelete: NoAction, onUpdate: NoAction, map: "pre_requisite_mod_code_fk")
+pre_requisite_requisite_fk module @relation("preRequisiteRequisiteToModule", fields: [requisite], references: [modCode], onDelete: NoAction, onUpdate: NoAction, map: "pre_requisite_requisite_fk")
   @@id([modCode, requisite])
   @@map("pre_requisite")
 }
@@ -125,6 +132,9 @@ model country {
   countryName String @id @map("country_name") @db.VarChar(30)
   language   String @db.VarChar(30)
   region    String @db.VarChar(30)
+
+  country_student student[]
+  @@map("country")
 }
 
 model student {
@@ -138,6 +148,11 @@ model student {
   nationalityCharacterVarying String @map("nationality_character_varying") @db.VarChar(30)
   crseCode   String   @map("crse_code") @db.VarChar(5)
 
+
+  student_crse_code_fk course @relation(fields: [crseCode], references: [crseCode], onDelete: NoAction, onUpdate: NoAction, map: "student_crse_code_fk")
+  student_nationality_fk country @relation(fields: [nationalityCharacterVarying], references: [countryName], onDelete: NoAction, onUpdate: NoAction, map: "student_nationality_fk")
+  stud_mod_perf_student studentModPerformance[] 
+
   @@map("student")
 }
 
@@ -147,6 +162,8 @@ model studentModPerformance {
   mark Int @map("mark")
   grade String @map("grade") @db.Char(1)
 
+  student_mod_performance_adm_no_fk student @relation(fields: [admNoCharacter], references: [admNo], onDelete: NoAction, onUpdate: NoAction, map: "student_mod_performance_adm_no_fk")
+  student_mod_performance_moduuled_fk module @relation(fields: [modRegistered], references: [modCode], onDelete: NoAction, onUpdate: NoAction, map: "student_mod_performance_mod_code_fk")
   @@id([admNoCharacter, modRegistered])
   @@map("student_mod_performance")
 }
